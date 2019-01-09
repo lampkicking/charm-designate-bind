@@ -1,6 +1,6 @@
-commit-sha-1: 74463ab4cf306846b723c53923b67718857517e7
-commit-short: 74463ab
+commit-sha-1: 76ea9ea97246b3b560c944158b0bfa639c4344f3
+commit-short: 76ea9ea
 branch: HEAD
 remote: https://github.com/openstack/charm-designate-bind
-info-generated: Tue Sep 12 19:41:12 UTC 2017
+info-generated: Mon Nov 19 23:37:53 UTC 2018
 note: This file should exist only in a built or released charm artifact (not in the charm source code tree).

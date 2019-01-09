@@ -13,7 +13,7 @@ def default_install():
     The instance automagically becomes the derived OpenStackCharm instance.
     The kv() key charmers.openstack-release-version' is used to cache the
     release being used for this charm.  It is determined by the
-    default_select_release() function below, unless this is overriden by
+    default_select_release() function below, unless this is overridden by
     the charm author
     """
     unitdata.kv().unset(defaults.OPENSTACK_RELEASE_KEY)
@@ -64,3 +64,21 @@ def run_default_update_status():
     with charm.provide_charm_instance() as instance:
         instance.assess_status()
     reactive.remove_state('run-default-update-status')
+
+
+# Series upgrade hooks are a special case and reacting to the hook directly
+# makes sense as we may not want other charm code to run
+@reactive.hook('pre-series-upgrade')
+def default_pre_series_upgrade():
+    """Default handler for pre-series-upgrade.
+    """
+    with charm.provide_charm_instance() as instance:
+        instance.series_upgrade_prepare()
+
+
+@reactive.hook('post-series-upgrade')
+def default_post_series_upgrade():
+    """Default handler for post-series-upgrade.
+    """
+    with charm.provide_charm_instance() as instance:
+        instance.series_upgrade_complete()

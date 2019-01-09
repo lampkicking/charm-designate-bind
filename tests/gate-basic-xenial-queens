@@ -15,10 +15,13 @@
 # limitations under the License.
 
 
-"""Amulet tests on a basic designate-bind deployment on ocata."""
+"""Amulet tests on a basic designate-bind deployment on xenial-queens."""
 
 from basic_deployment import DesignateBindDeployment
 
 if __name__ == '__main__':
-    deployment = DesignateBindDeployment(series='zesty')
+    deployment = DesignateBindDeployment(
+        series='xenial',
+        openstack='cloud:xenial-queens',
+        source='cloud:xenial-updates/queens')
     deployment.run_tests()

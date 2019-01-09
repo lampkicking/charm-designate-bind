@@ -14,11 +14,14 @@
 "series":
 - "trusty"
 - "xenial"
-- "zesty"
+- "bionic"
+- "cosmic"
 "provides":
   "dns-backend":
     "interface": "bind-rndc"
 "peers":
   "cluster":
     "interface": "openstack-ha"
+"extra-bindings":
+  "dns-frontend": !!null ""
 "subordinate": !!bool "false"

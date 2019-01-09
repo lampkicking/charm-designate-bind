@@ -1,14 +1,16 @@
-"options":
-  "openstack": {}
-  "designate-bind": {}
-  "basic":
-    "use_venv": !!bool "false"
-    "packages": []
-    "include_system_packages": !!bool "false"
 "includes":
+- "layer:options"
 - "layer:basic"
 - "layer:openstack"
 - "interface:bind-rndc"
 - "interface:openstack-ha"
-"repo": "https://github.com/openstack/charm-layer-openstack"
+"options":
+  "openstack": {}
+  "designate-bind": {}
+  "basic":
+    "python_packages": []
+    "packages": []
+    "use_venv": !!bool "true"
+    "include_system_packages": !!bool "true"
+"repo": "https://github.com/openstack/charm-designate-bind.git"
 "is": "designate-bind"

@@ -28,6 +28,8 @@ import charmhelpers.core.decorators as ch_decorators
 import charmhelpers.core.hookenv as hookenv
 import charmhelpers.core.host as host
 
+from charmhelpers.contrib.network import ip as ch_ip
+
 
 LEADERDB_SECRET_KEY = 'rndc_key'
 LEADERDB_SYNC_SRC_KEY = 'sync_src'
@@ -160,7 +162,7 @@ class DNSAdapter(adapters.OpenStackRelationAdapter):
 
         :returns: str: IP local rndc listens on
         """
-        return hookenv.unit_private_ip()
+        return ch_ip.get_relation_ip('dns-backend')
 
     @property
     def control_ips(self):
@@ -219,6 +221,8 @@ class DesignateBindCharm(openstack_charm.OpenStackCharm):
     adapters_class = BindAdapters
     release = 'icehouse'
     required_relations = []
+
+    group = 'bind'
 
     def __init__(self, release=None, **kwargs):
         super(DesignateBindCharm, self).__init__(release='icehouse', **kwargs)
@@ -414,7 +418,9 @@ class DesignateBindCharm(openstack_charm.OpenStackCharm):
         :returns: None
         """
         print("{} {}".format(url, target_dir))
-        cmd = ['wget', url, '--retry-connrefused', '-t', '10']
+        # set arg no-proxy as this should be a direct connection on
+        # dns-backend space lp#1796969
+        cmd = ['wget', url, '--no-proxy', '--retry-connrefused', '-t', '10']
         subprocess.check_call(cmd, cwd=target_dir)
 
     def retrieve_zones(self, cluster_relation=None):
@@ -435,21 +441,26 @@ class DesignateBindCharm(openstack_charm.OpenStackCharm):
                 cluster_relation.retrieve_local(CLUSTER_SYNC_KEY)))
             request_time = request_times[0]
         sync_time = DesignateBindCharm.get_sync_time()
-        if request_time and request_time > sync_time:
+        if request_time and sync_time and request_time > sync_time:
             hookenv.log(('Request for sync sent but remote sync time is too'
                          ' old, defering until a more up-to-date target is '
                          'available'),
                         level=hookenv.WARNING)
         else:
-            self.service_control('stop', ['bind9'])
             url = DesignateBindCharm.get_sync_src()
-            self.wget_file(url, ZONE_DIR)
-            tar_file = url.split('/')[-1]
-            subprocess.check_call(['tar', 'xf', tar_file], cwd=ZONE_DIR)
-            os.remove('{}/{}'.format(ZONE_DIR, tar_file))
-            self.service_control('start', ['bind9'])
-            reactive.remove_state('sync.request.sent')
-            reactive.set_state('zones.initialised')
+            if url:
+                self.service_control('stop', ['bind9'])
+                self.wget_file(url, ZONE_DIR)
+                tar_file = url.split('/')[-1]
+                subprocess.check_call(['tar', 'xf', tar_file], cwd=ZONE_DIR)
+                os.remove('{}/{}'.format(ZONE_DIR, tar_file))
+                self.service_control('start', ['bind9'])
+                reactive.remove_state('sync.request.sent')
+                reactive.set_state('zones.initialised')
+            else:
+                hookenv.log(('Leader has not set valid url for zone download '
+                             ' defering until leader provides url'),
+                            level=hookenv.WARNING)
 
     def set_apparmor(self):
         """Disbale apparmor for named
