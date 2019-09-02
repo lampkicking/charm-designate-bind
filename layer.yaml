@@ -4,13 +4,14 @@
 - "layer:openstack"
 - "interface:bind-rndc"
 - "interface:openstack-ha"
+"exclude": [".travis.yml", "tests", "tox.ini", "test-requirements.txt"]
 "options":
+  "basic":
+    "include_system_packages": !!bool "true"
+    "packages": ["python3-apt"]
+    "python_packages": []
+    "use_venv": !!bool "true"
   "openstack": {}
   "designate-bind": {}
-  "basic":
-    "python_packages": []
-    "packages": []
-    "use_venv": !!bool "true"
-    "include_system_packages": !!bool "true"
 "repo": "https://github.com/openstack/charm-designate-bind.git"
 "is": "designate-bind"
