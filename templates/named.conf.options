@@ -64,6 +64,8 @@ options {
         {% if options.allowed_nets -%}
         allow-query { allow_query; };
         {%- endif %}
+
+        tcp-clients 1000;
 };
 {%- if options.debug %}
 logging {
