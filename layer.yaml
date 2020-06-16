@@ -1,0 +1,19 @@
+"includes":
+- "layer:options"
+- "layer:basic"
+- "interface:tls-certificates"
+- "layer:openstack"
+- "interface:bind-rndc"
+- "interface:openstack-ha"
+"exclude": [".travis.yml", "tests", "tox.ini", "test-requirements.txt", "unit_tests",
+  ".gitignore", ".gitreview", ".zuul.yaml", "README.md", "requirements.txt"]
+"options":
+  "basic":
+    "use_venv": !!bool "true"
+    "include_system_packages": !!bool "false"
+    "packages": []
+    "python_packages": []
+  "designate-bind": {}
+  "openstack": {}
+"repo": "https://github.com/openstack/charm-designate-bind.git"
+"is": "designate-bind"
