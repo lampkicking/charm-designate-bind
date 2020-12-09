@@ -30,7 +30,7 @@ options {
         forwarders {
             {{ options.forwarders }};
         };
-        //forward only;
+        forward only;
         {%- endif %}
 
         //========================================================================
